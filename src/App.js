@@ -1,25 +1,16 @@
-import logo from './logo.svg';
-import './App.css';
-
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
+import ShowData from "./ShowData/showData";
+import Login from "./Login/login";
+import { useEffect, useState } from "react";
+const App = () => {
+    const [authToken, setAuthToken] = useState(() => localStorage.getItem("authToken"));
+  useEffect(() => {
+    if (authToken) {
+      localStorage.setItem("authToken", authToken);
+    } else {
+      localStorage.removeItem("authToken");
+    }
+  }, [authToken]);
+  return authToken ? <ShowData authToken={authToken} /> : <Login authToken={authToken} setAuthToken={setAuthToken} />;
+};
 
 export default App;
