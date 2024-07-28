@@ -1,16 +1,19 @@
 import axios from "axios";
 import { useState } from "react";
 import styled from "styled-components";
+import { useNavigate } from "react-router-dom";
 
-const Input = styled.input`
+export const Input = styled.input`
   type: ${(props) => props.type};
-  height: 25px;
+  placeholder: ${(props) => props.placeholder};
+  height: 30px;
   width: 300px;
   border-radius: 10px;
   margin-right: 10px;
+  text-align: center;
 `;
 
-const Login = ({ authToken, setAuthToken }) => {
+const Login = ({ setAuthToken }) => {
   const inputFields = [
     {
       name: "email",
@@ -31,12 +34,19 @@ const Login = ({ authToken, setAuthToken }) => {
     email: "",
     password: "",
   });
+  const navigate = useNavigate();
   const handleSubmit = async () => {
-    const response = await axios.get(
-      `${process.env.REACT_APP_BACKEND_URL}/auth?email=${formValues?.email}&password=${formValues?.password}`
-    );
-    const token = response.data.token;
-    setAuthToken(token);
+    try {
+      const response = await axios.get(
+        `${process.env.REACT_APP_BACKEND_URL}/auth?email=${formValues?.email}&password=${formValues?.password}`
+      );
+      const token = response.data.token;
+      setAuthToken(token);
+      navigate("/api", { replace: true });
+    } catch (err) {
+      alert(err.response.data.message);
+      console.log("Error while loging in ", err.response.data.message);
+    }
   };
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -53,6 +63,7 @@ const Login = ({ authToken, setAuthToken }) => {
           key={index}
           type={field.type}
           name={field.name}
+          placeholder={field.name}
           value={field.type === "submit" ? field.name : formValues[field.name]}
           onChange={field.type !== "submit" ? handleChange : undefined}
           onClick={field.type === "submit" ? handleSubmit : undefined}
